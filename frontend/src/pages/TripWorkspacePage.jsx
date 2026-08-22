@@ -25,13 +25,15 @@ import { TripHealthWidget } from '../components/health/TripHealthWidget';
 import { TripTimelineView } from '../components/calendar/TripTimelineView';
 import { DestinationExplorer } from '../components/discovery/DestinationExplorer';
 import { AIAssistantDrawer } from '../components/health/AIAssistantDrawer';
+import { TripCanvas } from '../components/itinerary/TripCanvas';
+import { VisualJourney } from '../components/itinerary/VisualJourney';
 
 export const TripWorkspacePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { trips, activeTrip, selectTrip, updateTrip, addStop } = useTrips();
 
-  const [activeTab, setActiveTab] = useState('route'); // route | itinerary | budget | health | calendar | discover
+  const [activeTab, setActiveTab] = useState('canvas'); // canvas | route | itinerary | budget | health | calendar | discover
   const [showAIDrawer, setShowAIDrawer] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -84,6 +86,8 @@ export const TripWorkspacePage = () => {
   };
 
   const tabs = [
+    { id: 'canvas', label: 'Trip Canvas', icon: Sparkles },
+    { id: 'journey', label: 'Visual Journey', icon: Globe2 },
     { id: 'route', label: 'Multi-City Route', icon: Layers },
     { id: 'itinerary', label: 'Day-by-Day Itinerary', icon: CalendarDays },
     { id: 'budget', label: 'Budget & Expenses', icon: PieChart },
@@ -204,6 +208,8 @@ export const TripWorkspacePage = () => {
 
       {/* 3. Active Tab Content Area */}
       <div>
+        {activeTab === 'canvas' && <TripCanvas trip={trip} />}
+        {activeTab === 'journey' && <VisualJourney trip={trip} />}
         {activeTab === 'route' && <RouteVisualizer trip={trip} />}
         {activeTab === 'itinerary' && <DayItineraryPlanner trip={trip} />}
         {activeTab === 'budget' && <BudgetAnalytics trip={trip} />}

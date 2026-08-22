@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useTrips } from '../../context/TripContext';
 import { GLOBAL_DESTINATIONS } from '../../data/destinations';
+import { CitySearch } from './CitySearch';
 
 export const DestinationExplorer = ({ onAddCityToTrip }) => {
   const { savedDestinations, toggleSaveDestination, activeTrip, addStop } = useTrips();
@@ -69,16 +70,9 @@ export const DestinationExplorer = ({ onAddCityToTrip }) => {
             </p>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search cities, countries, vibes..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-            />
+          {/* Debounced Advanced City Search */}
+          <div className="w-full md:w-80">
+            <CitySearch onSearch={setSearchQuery} placeholder="Where do you want to go?" />
           </div>
         </div>
 

@@ -236,21 +236,53 @@ export const DashboardPage = () => {
               const activities = trip.activities || [];
               const expenses = trip.expenses || [];
               const totalSpent = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+              
+              // Calculate duration in days
+              let durationDays = 1;
+              if (trip.startDate && trip.endDate) {
+                const s = new Date(trip.startDate);
+                const e = new Date(trip.endDate);
+                const diff = Math.abs(e - s);
+                durationDays = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+              }
+
+              // Format date range (e.g. Jun 10 - Jun 24)
+              const formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              };
+              const dateRangeStr = trip.startDate && trip.endDate 
+                ? `${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}`
+                : 'Dates not set';
+
+              // Calculate budget bar (e.g. ████████░░ 86%)
+              const budgetLimit = Number(trip.totalBudget) || 1;
+              const budgetPct = Math.min(100, Math.round((totalSpent / budgetLimit) * 100));
+              const filledBlocks = Math.round(budgetPct / 10);
+              const emptyBlocks = 10 - filledBlocks;
+              const budgetBar = '█'.repeat(Math.max(0, filledBlocks)) + '░'.repeat(Math.max(0, emptyBlocks));
 
               return (
                 <div
                   key={trip.id}
-                  className="group bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-3xl overflow-hidden shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="group relative bg-[#1e293b] border-2 border-dashed border-slate-700/80 hover:border-emerald-500/60 rounded-3xl p-5 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
+                  style={{
+                    backgroundImage: 'radial-gradient(circle at 100% 150%, rgba(20, 184, 166, 0.05) 0%, transparent 60%)'
+                  }}
                 >
-                  <div>
-                    {/* Thumbnail Cover */}
-                    <div className="relative aspect-[16/10] overflow-hidden">
+                  {/* Dotted border overlay simulating a vintage stamp receipt */}
+                  <div className="absolute inset-2 border border-slate-800/40 rounded-2xl pointer-events-none" />
+
+                  <div className="space-y-4">
+                    {/* Postcard Thumbnail Cover */}
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-inner border border-slate-800">
                       <img
                         src={trip.coverImage || 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80'}
                         alt={trip.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
                       {/* Public / Private Badge */}
                       <div className="absolute top-3 left-3">
@@ -264,78 +296,87 @@ export const DashboardPage = () => {
                       </div>
 
                       {/* Quick Card Action Buttons */}
-                      <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
-                          onClick={() => duplicateTrip(trip.id)}
-                          className="p-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-slate-300 hover:text-white border border-slate-800"
+                          onClick={(e) => { e.preventDefault(); duplicateTrip(trip.id); }}
+                          className="p-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-slate-300 hover:text-white border border-slate-800 transition-colors"
                           title="Duplicate Trip"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => deleteTrip(trip.id)}
-                          className="p-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-rose-400 hover:text-rose-300 border border-slate-800"
+                          onClick={(e) => { e.preventDefault(); deleteTrip(trip.id); }}
+                          className="p-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-rose-400 hover:text-rose-300 border border-slate-800 transition-colors"
                           title="Delete Trip"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                    </div>
 
-                      {/* Bottom Title on Image */}
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <h4 className="text-base font-bold text-white tracking-tight truncate">
-                          {trip.title}
+                    {/* Postcard Details Section */}
+                    <div className="space-y-3.5 px-1">
+                      {/* Trip Title in Postcard Header format */}
+                      <div>
+                        <h4 className="text-sm font-black uppercase tracking-wider text-teal-400">
+                          {trip.title || 'European Adventure'}
                         </h4>
-                        <div className="text-xs text-emerald-400 font-medium truncate mt-0.5">
+                        {/* Cities Route display: Paris → Rome → Barcelona */}
+                        <div className="text-xs font-semibold text-white truncate mt-1">
                           {stops.length > 0
                             ? stops.map((s) => s.cityName).join(' → ')
                             : 'No stops added yet'}
                         </div>
                       </div>
-                    </div>
 
-                    {/* Card Content Details */}
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
+                      {/* Date Range & Metadata (e.g. 14 Days • 3 Cities) */}
+                      <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <div className="flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                          {trip.startDate} to {trip.endDate}
-                        </span>
-                        <span className="font-semibold text-white">
-                          ${trip.totalBudget?.toLocaleString()}
+                          <span>{dateRangeStr}</span>
+                        </div>
+                        <span className="font-semibold text-slate-300">
+                          {durationDays} Days • {stops.length} {stops.length === 1 ? 'City' : 'Cities'}
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-[11px] p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                        <div>
-                          <div className="text-slate-500">Activities</div>
-                          <div className="font-bold text-slate-200">{activities.length} Planned</div>
+                      {/* Budget formatting in monospace blocks */}
+                      <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-1">
+                        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                          <span>Spent: ${totalSpent.toLocaleString()}</span>
+                          <span>Budget: ${trip.totalBudget?.toLocaleString()}</span>
                         </div>
-                        <div>
-                          <div className="text-slate-500">Spent to Date</div>
-                          <div className="font-bold text-emerald-400">${totalSpent.toLocaleString()}</div>
+                        <div className="text-xs font-mono tracking-widest text-emerald-400 flex items-center gap-2">
+                          <span className="text-[10px] text-slate-500 uppercase font-bold tracking-normal font-sans">Budget</span>
+                          <span>{budgetBar}</span>
+                          <span className="text-[11px] font-bold">{budgetPct}%</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Card Actions Footer */}
-                  <div className="p-4 pt-0 flex items-center gap-2">
+                  {/* Card Actions Footer with Reveal animation */}
+                  <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center gap-2">
                     <Link
                       to={`/trip/${trip.id}`}
-                      className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs text-center transition-colors"
+                      className="flex-1 py-2 px-4 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs text-center tracking-wider transition-all duration-300 hover:shadow-lg transform active:scale-95"
                     >
-                      Open Planner Workspace
+                      [ Open Trip ]
                     </Link>
                     {trip.shareSlug && (
                       <Link
                         to={`/trip/share/${trip.shareSlug}`}
-                        className="p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors"
+                        className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
                         title="View Public Story"
                       >
                         <Share2 className="w-4 h-4" />
                       </Link>
                     )}
+                  </div>
+
+                  {/* Stamp mark animation decoration */}
+                  <div className="absolute -bottom-8 -right-8 w-24 h-24 border-4 border-emerald-500/5 rounded-full pointer-events-none flex items-center justify-center text-[10px] font-black uppercase text-emerald-500/5 tracking-widest rotate-12 select-none">
+                    Globetrotter
                   </div>
                 </div>
               );

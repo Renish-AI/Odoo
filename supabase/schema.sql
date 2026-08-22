@@ -233,5 +233,23 @@ CREATE POLICY "View own saved destinations" ON public.saved_destinations FOR SEL
 CREATE POLICY "Manage own saved destinations" ON public.saved_destinations FOR ALL 
     USING (auth.uid() = user_id);
 
+-- 8. CITIES TABLE (Pre-populated travel destinations database)
+CREATE TABLE IF NOT EXISTS public.cities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    country TEXT NOT NULL,
+    region TEXT,
+    description TEXT,
+    image_url TEXT,
+    average_daily_cost NUMERIC DEFAULT 120.00,
+    popularity_score NUMERIC DEFAULT 4.5,
+    latitude NUMERIC(9, 6),
+    longitude NUMERIC(9, 6),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.cities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow read access to everyone" ON public.cities FOR SELECT USING (true);
+
 -- Storage bucket setup statement (run in Supabase Storage UI or CLI)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('trip-images', 'trip-images', true) ON CONFLICT DO NOTHING;

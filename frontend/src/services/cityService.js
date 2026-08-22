@@ -1,41 +1,49 @@
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { GLOBAL_DESTINATIONS } from '../data/destinations';
 
 export const cityService = {
-  async getAllDestinations() {
-    return GLOBAL_DESTINATIONS;
-  },
+  /**
+   * Search for cities based on a text query
+   * Matches name, country, region, or tags.
+   */
+  async searchCities(query) {
+    const trimmedQuery = query.trim().toLowerCase();
+    if (!trimmedQuery) return [];
 
-  async searchDestinations(query = '', region = 'All', tag = 'All') {
-    let list = GLOBAL_DESTINATIONS;
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        // Query cities from Supabase
+        const { data, error } = await supabase
+          .from('cities')
+          .select('*')
+          .or(`name.ilike.%${trimmedQuery}%,country.ilike.%${trimmedQuery}%,region.ilike.%${trimmedQuery}%`);
 
-    if (region && region !== 'All') {
-      list = list.filter((d) => d.region.toLowerCase() === region.toLowerCase());
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return data.map(c => ({
+            id: c.id,
+            city: c.name,
+            country: c.country,
+            region: c.region,
+            description: c.description,
+            image: c.image_url,
+            avgDailyBudget: Number(c.average_daily_cost),
+            rating: Number(c.popularity_score),
+            lat: Number(c.latitude),
+            lng: Number(c.longitude)
+          }));
+        }
+      } catch (err) {
+        console.error('Supabase searchCities failed, using fallback:', err);
+      }
     }
 
-    if (tag && tag !== 'All') {
-      list = list.filter((d) =>
-        d.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
-      );
-    }
-
-    if (query && query.trim()) {
-      const q = query.toLowerCase().trim();
-      list = list.filter(
-        (d) =>
-          d.city.toLowerCase().includes(q) ||
-          d.country.toLowerCase().includes(q) ||
-          d.tags.some((t) => t.toLowerCase().includes(q))
-      );
-    }
-
-    return list;
-  },
-
-  async getDestinationByCity(cityName) {
-    return (
-      GLOBAL_DESTINATIONS.find(
-        (d) => d.city.toLowerCase() === cityName.toLowerCase()
-      ) || null
+    // Local fallback matching GLOBAL_DESTINATIONS
+    return GLOBAL_DESTINATIONS.filter(dest => 
+      dest.city.toLowerCase().includes(trimmedQuery) ||
+      dest.country.toLowerCase().includes(trimmedQuery) ||
+      dest.region.toLowerCase().includes(trimmedQuery) ||
+      dest.tags.some(t => t.toLowerCase().includes(trimmedQuery))
     );
   }
 };

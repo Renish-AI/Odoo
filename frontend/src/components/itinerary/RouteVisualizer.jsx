@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useTrips } from '../../context/TripContext';
 import { GLOBAL_DESTINATIONS } from '../../data/destinations';
+import { InteractiveMap } from './InteractiveMap';
 
 const SortableStopCard = ({ stop, index, totalStops, onEdit, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -214,6 +215,11 @@ export const RouteVisualizer = ({ trip }) => {
           <Plus className="w-3.5 h-3.5 text-emerald-400" />
           <span>Add City Stop</span>
         </button>
+      </div>
+
+      {/* Interactive Map */}
+      <div className="mb-6">
+        <InteractiveMap stops={stops} activities={trip?.activities || []} />
       </div>
 
       {/* Horizontal Sortable Stops Container */}
