@@ -10,6 +10,8 @@ import { PublicStoryView } from './components/share/PublicStoryView';
 import { ExplorePage } from './pages/ExplorePage';
 import { SavedDestinationsPage } from './pages/SavedDestinationsPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 import PageTransition from './layouts/PageTransition';
 
 export const App = () => {
@@ -22,6 +24,8 @@ export const App = () => {
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
+            <Route path="/signup" element={<PageTransition><SignupPage /></PageTransition>} />
             <Route path="/trips" element={<PageTransition><DashboardPage /></PageTransition>} />
             <Route path="/trip/:id" element={<PageTransition><TripWorkspacePage /></PageTransition>} />
             <Route path="/trip/share/:slug" element={<PageTransition><PublicStoryView /></PageTransition>} />

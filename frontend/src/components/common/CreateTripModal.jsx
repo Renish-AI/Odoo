@@ -113,17 +113,27 @@ export const CreateTripModal = ({ onClose }) => {
         origin: { y: 0.6 }
       });
 
-      onClose();
-      navigate(`/trip/${newTrip.id}`);
+      setTimeout(() => {
+        onClose();
+        navigate(`/trip/${newTrip.id}`);
+      }, 2000);
     } catch (err) {
       console.error('Error creating trip:', err);
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-lg">
+          <div className="w-24 h-24 bg-teal-500/20 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse">
+            <span className="text-5xl">🌊</span>
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-2">Your adventure begins 🌊</h2>
+          <p className="text-teal-400 font-medium">Preparing your itinerary builder...</p>
+        </div>
+      )}
       <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}

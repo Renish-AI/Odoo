@@ -20,6 +20,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTrips } from '../../context/TripContext';
 import { AuthModal } from '../common/AuthModal';
 import { CreateTripModal } from '../common/CreateTripModal';
+import { motion } from 'framer-motion';
 
 export const Navbar = () => {
   const { user, logout, isDemoMode, isSupabaseReady, switchDemo } = useAuth();
@@ -114,7 +115,7 @@ export const Navbar = () => {
             </div>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 relative">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = location.pathname === link.path;
@@ -122,14 +123,24 @@ export const Navbar = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all group overflow-hidden ${
                       isActive
-                        ? 'text-emerald-400 bg-emerald-500/10 font-semibold'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                        ? 'text-teal-400 font-semibold'
+                        : 'text-slate-400 hover:text-white'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    {link.name}
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-indicator"
+                        className="absolute inset-0 bg-teal-500/10 rounded-lg z-0"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    {/* Hover: Ocean highlight */}
+                    <div className="absolute inset-0 bg-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity z-0" />
+                    
+                    <Icon className="w-4 h-4 relative z-10 group-hover:-translate-y-0.5 transition-transform" />
+                    <span className="relative z-10">{link.name}</span>
                   </Link>
                 );
               })}
@@ -238,12 +249,12 @@ export const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <button
-                  onClick={() => setShowAuthModal(true)}
+                <Link
+                  to="/login"
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
                 >
                   Sign In
-                </button>
+                </Link>
               )}
 
               {/* Mobile menu trigger */}
