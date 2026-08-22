@@ -12,8 +12,7 @@ import {
   CheckCircle2, 
   ChevronDown,
   Menu,
-  X,
-  Waves
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTrips } from '../../context/TripContext';
@@ -46,12 +45,10 @@ export const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo with Ocean Theme */}
+            {/* Logo */}
             <div className="flex items-center gap-6">
               <Link to="/" className="flex items-center gap-2.5 group">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-ocean-500 via-cyan-400 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:scale-105 transition-transform">
-                  <Waves className="w-6 h-6 text-slate-950 stroke-[2.4]" />
-                </div>
+                <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain group-hover:scale-105 transition-transform" />
                 <div className="flex flex-col">
                   <span className="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
                     GLOBE<span className="text-transparent bg-clip-text bg-gradient-to-r from-ocean-400 to-cyan-300">TROTTER</span>

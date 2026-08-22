@@ -14,9 +14,21 @@ import { AIFloatingCopilot } from './components/ai/AIFloatingCopilot';
 
 export const App = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-slate-950">
-      <Navbar />
-      <main className="flex-1">
+    <div className="flex flex-col min-h-screen text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+      {/* Background Layer (Fixed) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-slate-950" />
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"
+          style={{ backgroundImage: 'url("/background.jpg")' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950/80" />
+      </div>
+      
+      {/* Foreground Content */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/trips" element={<DashboardPage />} />
@@ -32,6 +44,7 @@ export const App = () => {
       
       {/* Floating Global AI Travel Copilot */}
       <AIFloatingCopilot />
+      </div>
     </div>
   );
 };
