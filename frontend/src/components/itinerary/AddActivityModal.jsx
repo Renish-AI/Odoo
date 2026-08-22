@@ -8,7 +8,8 @@ import {
   Plus, 
   Compass, 
   Check, 
-  Tag
+  Tag,
+  Search
 } from 'lucide-react';
 import { useTrips } from '../../context/TripContext';
 import { GLOBAL_DESTINATIONS } from '../../data/destinations';
@@ -17,6 +18,7 @@ export const AddActivityModal = ({ tripId, stopId, dayNumber = 1, currentCityNam
   const { addActivity } = useTrips();
 
   const [activeTab, setActiveTab] = useState('curated'); // curated | custom
+  const [searchQuery, setSearchQuery] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Sightseeing');
@@ -31,6 +33,21 @@ export const AddActivityModal = ({ tripId, stopId, dayNumber = 1, currentCityNam
   const cityData = GLOBAL_DESTINATIONS.find(
     (d) => d.city.toLowerCase() === currentCityName.toLowerCase()
   ) || GLOBAL_DESTINATIONS[0];
+
+  // All activities pool for global search fallback
+  const allGlobalActivities = GLOBAL_DESTINATIONS.flatMap((d) => 
+    (d.popularActivities || []).map((a) => ({ ...a, cityOrigin: d.city }))
+  );
+
+  const localActivities = cityData?.popularActivities || [];
+  
+  const displayedCurated = searchQuery.trim()
+    ? allGlobalActivities.filter((a) => 
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (a.cityOrigin && a.cityOrigin.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : localActivities;
 
   const handleAddCustom = async (e) => {
     e.preventDefault();
@@ -141,38 +158,67 @@ export const AddActivityModal = ({ tripId, stopId, dayNumber = 1, currentCityNam
         {/* Modal Body */}
         <div className="overflow-y-auto flex-1 pr-1 space-y-4">
           {activeTab === 'curated' ? (
-            <div className="space-y-2.5">
-              <div className="text-xs text-slate-400">
-                Click any top attraction to instantly schedule it into Day {dayNumber}:
+            <div className="space-y-3">
+              {/* Search Bar for Experiences */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={`Search attractions (e.g. Eiffel Tower, Louvre, Colosseum, Canal Cruise)...`}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                />
               </div>
-              <div className="grid grid-cols-1 gap-2">
-                {(cityData?.popularActivities || []).map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 flex items-center justify-between gap-3 group transition-all"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-emerald-400">
-                          {item.category}
-                        </span>
-                        <span className="text-xs font-bold text-white">{item.title}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
-                        <span>⏱️ ~{item.duration || '2h'}</span>
-                        <span>💰 {item.cost > 0 ? `$${item.cost}` : 'Free Entry'}</span>
-                      </div>
-                    </div>
 
-                    <button
-                      onClick={() => handleAddCurated(item)}
-                      disabled={loading}
-                      className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-1 transition-all group-hover:scale-105"
-                    >
-                      <Plus className="w-3.5 h-3.5" /> Add
-                    </button>
+              <div className="text-[11px] text-slate-400 flex items-center justify-between">
+                <span>{searchQuery ? `Matching Experiences (${displayedCurated.length})` : `Top Highlights for ${currentCityName}:`}</span>
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="text-emerald-400 hover:underline">
+                    Clear Search
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 max-h-[340px] overflow-y-auto pr-1">
+                {displayedCurated.length === 0 ? (
+                  <div className="text-center py-8 text-xs text-slate-500">
+                    No matching attractions found. Try a different keyword or create a custom activity.
                   </div>
-                ))}
+                ) : (
+                  displayedCurated.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 flex items-center justify-between gap-3 group transition-all"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-emerald-400">
+                            {item.category}
+                          </span>
+                          {item.cityOrigin && item.cityOrigin !== currentCityName && (
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400">
+                              {item.cityOrigin}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold text-white">{item.title}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
+                          <span>⏱️ ~{item.duration || '2h'}</span>
+                          <span>💰 {item.cost > 0 ? `$${item.cost}` : 'Free Entry'}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleAddCurated(item)}
+                        disabled={loading}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-1 transition-all group-hover:scale-105 shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           ) : (

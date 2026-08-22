@@ -48,16 +48,17 @@ export const aiService = {
     // 2. Activity Density Check
     const activitiesByDay = {};
     activities.forEach((act) => {
-      const key = `${act.tripStopId}-day-${act.dayNumber}`;
+      const dayNum = act.dayNumber || 1;
+      const key = `Day ${dayNum}`;
       activitiesByDay[key] = (activitiesByDay[key] || 0) + 1;
     });
 
-    Object.entries(activitiesByDay).forEach(([dayKey, count]) => {
-      if (count > 4) {
+    Object.entries(activitiesByDay).forEach(([dayLabel, count]) => {
+      if (count >= 3) {
         issues.push({
           type: 'caution',
-          title: `Overscheduled Day (${count} activities)`,
-          description: `Having >4 scheduled activities on a single day often leads to transit delays and traveler burnout.`
+          title: `⚠️ ${dayLabel} looks packed.`,
+          description: `Having ${count} scheduled activities on ${dayLabel} looks packed. Consider spacing afternoon activities to prevent fatigue.`
         });
         healthScore -= 6;
       }
