@@ -52,6 +52,8 @@ const getCategoryTheme = (category) => {
   }
 };
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 const SortableActivityItem = ({ activity, tripId, onDelete, onToggleStatus }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: activity.id });
@@ -67,87 +69,91 @@ const SortableActivityItem = ({ activity, tripId, onDelete, onToggleStatus }) =>
   const CategoryIcon = theme.icon;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="group relative bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-4 transition-all shadow-md flex items-start gap-3.5"
-    >
-      {/* Drag Handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-slate-800 text-slate-600 hover:text-slate-300 mt-1"
-        title="Drag to reorder time order"
+    <div ref={setNodeRef} style={style}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="group relative bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-4 transition-all shadow-md flex items-start gap-3.5"
       >
-        <GripVertical className="w-4 h-4" />
-      </div>
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-slate-800 text-slate-600 hover:text-slate-300 mt-1"
+          title="Drag to reorder time order"
+        >
+          <GripVertical className="w-4 h-4" />
+        </div>
 
-      {/* Category Icon Badge */}
-      <div className={`p-2.5 rounded-xl ${theme.bg} ${theme.border} border shrink-0 mt-0.5`}>
-        <CategoryIcon className={`w-4 h-4 ${theme.text}`} />
-      </div>
+        {/* Category Icon Badge */}
+        <div className={`p-2.5 rounded-xl ${theme.bg} ${theme.border} border shrink-0 mt-0.5`}>
+          <CategoryIcon className={`w-4 h-4 ${theme.text}`} />
+        </div>
 
-      {/* Main Details */}
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${theme.bg} ${theme.text}`}>
-              {activity.category}
-            </span>
-            <h4 className="text-sm font-bold text-white truncate">{activity.title}</h4>
+        {/* Main Details */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${theme.bg} ${theme.text}`}>
+                {activity.category}
+              </span>
+              <h4 className="text-sm font-bold text-white truncate">{activity.title}</h4>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {activity.cost > 0 ? (
+                <span className="text-xs font-semibold text-emerald-400">
+                  ${activity.cost}
+                </span>
+              ) : (
+                <span className="text-[11px] font-medium text-slate-500">Free</span>
+              )}
+
+              <button
+                onClick={() => onDelete(activity.id)}
+                className="p-1 text-slate-600 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors opacity-0 group-hover:opacity-100"
+                title="Delete activity"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {activity.cost > 0 ? (
-              <span className="text-xs font-semibold text-emerald-400">
-                ${activity.cost}
-              </span>
-            ) : (
-              <span className="text-[11px] font-medium text-slate-500">Free</span>
+          {activity.description && (
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              {activity.description}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/60">
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-slate-400" />
+              <span>{activity.startTime || '09:00'} - {activity.endTime || '11:00'}</span>
+            </div>
+
+            {activity.locationName && (
+              <div className="flex items-center gap-1 truncate max-w-[200px]">
+                <MapPin className="w-3 h-3 text-slate-400" />
+                <span className="truncate">{activity.locationName}</span>
+              </div>
             )}
 
             <button
-              onClick={() => onDelete(activity.id)}
-              className="p-1 text-slate-600 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors opacity-0 group-hover:opacity-100"
-              title="Delete activity"
+              onClick={() => onToggleStatus(activity)}
+              className={`ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-colors flex items-center gap-1 ${
+                activity.status === 'booked'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+              }`}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <CheckCircle className="w-3 h-3" />
+              <span>{activity.status === 'booked' ? 'Booked' : 'Mark Booked'}</span>
             </button>
           </div>
         </div>
-
-        {activity.description && (
-          <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-            {activity.description}
-          </p>
-        )}
-
-        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/60">
-          <div className="flex items-center gap-1">
-            <Clock className="w-3 h-3 text-slate-400" />
-            <span>{activity.startTime || '09:00'} - {activity.endTime || '11:00'}</span>
-          </div>
-
-          {activity.locationName && (
-            <div className="flex items-center gap-1 truncate max-w-[200px]">
-              <MapPin className="w-3 h-3 text-slate-400" />
-              <span className="truncate">{activity.locationName}</span>
-            </div>
-          )}
-
-          <button
-            onClick={() => onToggleStatus(activity)}
-            className={`ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-colors flex items-center gap-1 ${
-              activity.status === 'booked'
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <CheckCircle className="w-3 h-3" />
-            <span>{activity.status === 'booked' ? 'Booked' : 'Mark Booked'}</span>
-          </button>
-        </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -289,15 +295,17 @@ export const DayItineraryPlanner = ({ trip }) => {
               strategy={verticalListSortingStrategy}
             >
               <div className="space-y-3">
-                {dayActivities.map((activity) => (
-                  <SortableActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    tripId={trip.id}
-                    onDelete={(id) => deleteActivity(trip.id, id)}
-                    onToggleStatus={handleToggleStatus}
-                  />
-                ))}
+                <AnimatePresence mode="popLayout">
+                  {dayActivities.map((activity) => (
+                    <SortableActivityItem
+                      key={activity.id}
+                      activity={activity}
+                      tripId={trip.id}
+                      onDelete={(id) => deleteActivity(trip.id, id)}
+                      onToggleStatus={handleToggleStatus}
+                    />
+                  ))}
+                </AnimatePresence>
               </div>
             </SortableContext>
           </DndContext>

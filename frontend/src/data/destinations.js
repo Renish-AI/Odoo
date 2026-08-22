@@ -294,6 +294,160 @@ export const GLOBAL_DESTINATIONS = [
       { title: 'Old Goa Churches & Spice Plantation Tour', category: 'Culture', cost: 35, duration: '6h', lat: 15.5038, lng: 73.9118 },
       { title: 'Sunset Cruise on Mandovi River', category: 'Sightseeing', cost: 20, duration: '2h', lat: 15.5009, lng: 73.8180 }
     ]
+  },
+  {
+    id: 'dest-singapore',
+    city: 'Singapore',
+    country: 'Singapore',
+    countryCode: 'SG',
+    region: 'Asia',
+    lat: 1.3521,
+    lng: 103.8198,
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80',
+    description: 'A global financial center with a tropical climate, multicultural population, and stunning gardens.',
+    rating: 4.8,
+    reviewsCount: 3200,
+    avgDailyBudget: 150,
+    currency: 'SGD',
+    bestSeason: 'December - June',
+    tags: ['Futuristic', 'Gardens', 'Foodie', 'Clean'],
+    popularActivities: [
+      { title: 'Gardens by the Bay & Cloud Forest', category: 'Sightseeing', cost: 25, duration: '3h', lat: 1.2816, lng: 103.8636 },
+      { title: 'Marina Bay Sands Observation Deck', category: 'Sightseeing', cost: 20, duration: '2h', lat: 1.2834, lng: 103.8607 },
+      { title: 'Chinatown Hawker Centre Tour', category: 'Food', cost: 15, duration: '2h', lat: 1.2847, lng: 103.8434 }
+    ]
+  },
+  {
+    id: 'dest-bangkok',
+    city: 'Bangkok',
+    country: 'Thailand',
+    countryCode: 'TH',
+    region: 'Asia',
+    lat: 13.7563,
+    lng: 100.5018,
+    image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1200&q=80',
+    description: 'Vibrant street life, ornate shrines, bustling markets, and world-class street food.',
+    rating: 4.7,
+    reviewsCount: 4500,
+    avgDailyBudget: 80,
+    currency: 'THB',
+    bestSeason: 'November - February',
+    tags: ['Street Food', 'Temples', 'Nightlife', 'Shopping'],
+    popularActivities: [
+      { title: 'Grand Palace & Wat Phra Kaew', category: 'Culture', cost: 18, duration: '3h', lat: 13.7500, lng: 100.4913 },
+      { title: 'Chatuchak Weekend Market', category: 'Shopping', cost: 0, duration: '4h', lat: 13.7999, lng: 100.5548 },
+      { title: 'Chao Phraya River Dinner Cruise', category: 'Food', cost: 45, duration: '2.5h', lat: 13.7228, lng: 100.5135 }
+    ]
+  },
+  {
+    id: 'dest-amsterdam',
+    city: 'Amsterdam',
+    country: 'Netherlands',
+    countryCode: 'NL',
+    region: 'Europe',
+    lat: 52.3676,
+    lng: 4.9041,
+    image: 'https://images.unsplash.com/photo-1517736996303-4e64a49e8699?auto=format&fit=crop&w=1200&q=80',
+    description: 'Picturesque canals, cycling culture, historic museums, and a relaxed atmosphere.',
+    rating: 4.8,
+    reviewsCount: 3800,
+    avgDailyBudget: 170,
+    currency: 'EUR',
+    bestSeason: 'April - May (Tulips) & September',
+    tags: ['Canals', 'Cycling', 'Art', 'Culture'],
+    popularActivities: [
+      { title: 'Rijksmuseum & Van Gogh Museum', category: 'Culture', cost: 45, duration: '4h', lat: 52.3599, lng: 4.8852 },
+      { title: 'Historic Canal Boat Tour', category: 'Sightseeing', cost: 20, duration: '1.5h', lat: 52.3783, lng: 4.8980 },
+      { title: 'Anne Frank House Visit', category: 'Culture', cost: 15, duration: '2h', lat: 52.3752, lng: 4.8839 }
+    ]
+  },
+  {
+    id: 'dest-prague',
+    city: 'Prague',
+    country: 'Czech Republic',
+    countryCode: 'CZ',
+    region: 'Europe',
+    lat: 50.0755,
+    lng: 14.4378,
+    image: 'https://images.unsplash.com/photo-1541882822616-921c5f3b7543?auto=format&fit=crop&w=1200&q=80',
+    description: 'The City of a Hundred Spires, featuring stunning Gothic architecture and rich history.',
+    rating: 4.8,
+    reviewsCount: 2700,
+    avgDailyBudget: 110,
+    currency: 'CZK',
+    bestSeason: 'May - September',
+    tags: ['History', 'Gothic', 'Beer Culture', 'Architecture'],
+    popularActivities: [
+      { title: 'Prague Castle & St. Vitus Cathedral', category: 'Sightseeing', cost: 12, duration: '3h', lat: 50.0903, lng: 14.4005 },
+      { title: 'Charles Bridge Early Morning Walk', category: 'Sightseeing', cost: 0, duration: '1.5h', lat: 50.0865, lng: 14.4114 },
+      { title: 'Old Town Square & Astronomical Clock', category: 'Culture', cost: 0, duration: '2h', lat: 50.0870, lng: 14.4207 }
+    ]
+  },
+  {
+    id: 'dest-istanbul',
+    city: 'Istanbul',
+    country: 'Turkey',
+    countryCode: 'TR',
+    region: 'Europe/Asia',
+    lat: 41.0082,
+    lng: 28.9784,
+    image: 'https://images.unsplash.com/photo-1526620579294-f203875323c9?auto=format&fit=crop&w=1200&q=80',
+    description: 'Where East meets West, offering stunning mosques, bustling bazaars, and rich history.',
+    rating: 4.7,
+    reviewsCount: 3900,
+    avgDailyBudget: 90,
+    currency: 'TRY',
+    bestSeason: 'April - May & September - October',
+    tags: ['Culture', 'Bazaars', 'Architecture', 'Food'],
+    popularActivities: [
+      { title: 'Hagia Sophia & Blue Mosque', category: 'Culture', cost: 0, duration: '3h', lat: 41.0085, lng: 28.9802 },
+      { title: 'Grand Bazaar Shopping & Tea', category: 'Shopping', cost: 25, duration: '2h', lat: 41.0106, lng: 28.9680 },
+      { title: 'Bosphorus Sunset Cruise', category: 'Sightseeing', cost: 30, duration: '2h', lat: 41.0256, lng: 29.0116 }
+    ]
+  },
+  {
+    id: 'dest-sydney',
+    city: 'Sydney',
+    country: 'Australia',
+    countryCode: 'AU',
+    region: 'Oceania',
+    lat: -33.8688,
+    lng: 151.2093,
+    image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80',
+    description: 'Iconic harbor views, beautiful surf beaches, and a vibrant arts and culinary scene.',
+    rating: 4.8,
+    reviewsCount: 3400,
+    avgDailyBudget: 180,
+    currency: 'AUD',
+    bestSeason: 'September - November & March - May',
+    tags: ['Beaches', 'Harbor', 'Iconic', 'Nature'],
+    popularActivities: [
+      { title: 'Sydney Opera House Tour', category: 'Culture', cost: 30, duration: '2h', lat: -33.8568, lng: 151.2153 },
+      { title: 'Bondi to Coogee Coastal Walk', category: 'Nature', cost: 0, duration: '3h', lat: -33.8915, lng: 151.2767 },
+      { title: 'Sydney Harbour Bridge Climb', category: 'Adventure', cost: 200, duration: '3.5h', lat: -33.8523, lng: 151.2108 }
+    ]
+  },
+  {
+    id: 'dest-zurich',
+    city: 'Zurich',
+    country: 'Switzerland',
+    countryCode: 'CH',
+    region: 'Europe',
+    lat: 47.3769,
+    lng: 8.5417,
+    image: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=1200&q=80',
+    description: 'Pristine lakes, alpine views, high-end shopping, and immaculate medieval architecture.',
+    rating: 4.7,
+    reviewsCount: 2200,
+    avgDailyBudget: 250,
+    currency: 'CHF',
+    bestSeason: 'June - August',
+    tags: ['Lakes', 'Alps', 'Luxury', 'Clean'],
+    popularActivities: [
+      { title: 'Lake Zurich Boat Cruise', category: 'Relax', cost: 35, duration: '2h', lat: 47.3619, lng: 8.5401 },
+      { title: 'Old Town (Altstadt) Walking Tour', category: 'Sightseeing', cost: 20, duration: '2h', lat: 47.3717, lng: 8.5435 },
+      { title: 'Uetliberg Mountain Hike & Views', category: 'Nature', cost: 10, duration: '3h', lat: 47.3496, lng: 8.4920 }
+    ]
   }
 ];
 

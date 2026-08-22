@@ -34,6 +34,8 @@ import { useTrips } from '../../context/TripContext';
 import { GLOBAL_DESTINATIONS } from '../../data/destinations';
 import { InteractiveMap } from './InteractiveMap';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 const SortableStopCard = ({ stop, index, totalStops, onEdit, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: stop.id });
@@ -62,80 +64,88 @@ const SortableStopCard = ({ stop, index, totalStops, onEdit, onDelete }) => {
 
   return (
     <div ref={setNodeRef} style={style} className="flex items-center">
-      {/* City Stop Card */}
-      <div className="relative group w-64 bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-lg hover:border-emerald-500/40 transition-all flex flex-col justify-between">
-        
-        {/* Drag handle & order badge */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold flex items-center justify-center">
-              {index + 1}
-            </span>
-            <span className="text-xs font-bold text-white truncate max-w-[120px]">
-              {stop.cityName}
-            </span>
-          </div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        exit={{ opacity: 0, scale: 0.8, x: 20 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center"
+      >
+        {/* City Stop Card */}
+        <div className="relative group w-64 bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-lg hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+          
+          {/* Drag handle & order badge */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold flex items-center justify-center">
+                {index + 1}
+              </span>
+              <span className="text-xs font-bold text-white truncate max-w-[120px]">
+                {stop.cityName}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onDelete(stop.id)}
-              className="p-1 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors opacity-0 group-hover:opacity-100"
-              title="Remove Stop"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-            <div
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-slate-300"
-              title="Drag to reorder"
-            >
-              <GripVertical className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onDelete(stop.id)}
+                className="p-1 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors opacity-0 group-hover:opacity-100"
+                title="Remove Stop"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+              <div
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-slate-300"
+                title="Drag to reorder"
+              >
+                <GripVertical className="w-3.5 h-3.5" />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Thumbnail Image */}
-        <div className="relative h-24 rounded-xl overflow-hidden mb-2.5">
-          <img
-            src={stop.coverImage || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'}
-            alt={stop.cityName}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-          <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-[11px] text-slate-200 font-medium">
-            <span>{stop.countryName}</span>
-            <span className="text-[10px] text-emerald-400 font-semibold px-1.5 py-0.5 rounded bg-slate-900/80 backdrop-blur-sm">
-              {stop.transitDurationMins > 0 ? `${Math.round(stop.transitDurationMins / 60)}h transit` : 'Origin'}
-            </span>
-          </div>
-        </div>
-
-        {/* Dates & Quick notes */}
-        <div className="space-y-1 text-[11px] text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3 h-3 text-slate-500" />
-            <span>{stop.arrivalDate} → {stop.departureDate}</span>
-          </div>
-          {stop.notes && (
-            <div className="text-[10px] text-slate-400 truncate italic">
-              "{stop.notes}"
+          {/* Thumbnail Image */}
+          <div className="relative h-24 rounded-xl overflow-hidden mb-2.5">
+            <img
+              src={stop.coverImage || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'}
+              alt={stop.cityName}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+            <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-[11px] text-slate-200 font-medium">
+              <span>{stop.countryName}</span>
+              <span className="text-[10px] text-emerald-400 font-semibold px-1.5 py-0.5 rounded bg-slate-900/80 backdrop-blur-sm">
+                {stop.transitDurationMins > 0 ? `${Math.round(stop.transitDurationMins / 60)}h transit` : 'Origin'}
+              </span>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Transit Connector between stops */}
-      {index < totalStops - 1 && (
-        <div className="flex flex-col items-center px-3 text-slate-500">
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-semibold text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors">
-            <TransitIcon className="w-3 h-3 text-emerald-400" />
-            <span>~{stop.transitDurationMins || 120}m</span>
           </div>
-          <div className="w-8 h-[2px] bg-gradient-to-r from-emerald-500/40 via-teal-500/60 to-emerald-500/40 my-1" />
-          <div className="text-[9px] text-slate-500 font-medium">${stop.transitCost || 60}</div>
+
+          {/* Dates & Quick notes */}
+          <div className="space-y-1 text-[11px] text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3 h-3 text-slate-500" />
+              <span>{stop.arrivalDate} → {stop.departureDate}</span>
+            </div>
+            {stop.notes && (
+              <div className="text-[10px] text-slate-400 truncate italic">
+                "{stop.notes}"
+              </div>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Transit Connector between stops */}
+        {index < totalStops - 1 && (
+          <div className="flex flex-col items-center px-3 text-slate-500">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-semibold text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors">
+              <TransitIcon className="w-3 h-3 text-emerald-400" />
+              <span>~{stop.transitDurationMins || 120}m</span>
+            </div>
+            <div className="w-8 h-[2px] bg-gradient-to-r from-emerald-500/40 via-teal-500/60 to-emerald-500/40 my-1" />
+            <div className="text-[9px] text-slate-500 font-medium">${stop.transitCost || 60}</div>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 };
@@ -246,15 +256,17 @@ export const RouteVisualizer = ({ trip }) => {
               strategy={horizontalListSortingStrategy}
             >
               <div className="flex items-center min-w-max gap-1">
-                {stops.map((stop, idx) => (
-                  <SortableStopCard
-                    key={stop.id}
-                    stop={stop}
-                    index={idx}
-                    totalStops={stops.length}
-                    onDelete={(id) => deleteStop(trip.id, id)}
-                  />
-                ))}
+                <AnimatePresence mode="popLayout">
+                  {stops.map((stop, idx) => (
+                    <SortableStopCard
+                      key={stop.id}
+                      stop={stop}
+                      index={idx}
+                      totalStops={stops.length}
+                      onDelete={(id) => deleteStop(trip.id, id)}
+                    />
+                  ))}
+                </AnimatePresence>
               </div>
             </SortableContext>
           </DndContext>
