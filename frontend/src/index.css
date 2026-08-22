@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-navyText antialiased selection:bg-oceanBlue selection:text-white;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+/* Ocean Gradients */
+@layer utilities {
+  .bg-gradient-ocean {
+    background: linear-gradient(135deg, #063B5C 0%, #087EA4 100%);
+  }
+  .bg-gradient-aqua {
+    background: linear-gradient(135deg, #087EA4 0%, #12B8C4 100%);
+  }
+  .bg-gradient-turquoise {
+    background: linear-gradient(135deg, #12B8C4 0%, #19C3B1 100%);
+  }
+  .bg-gradient-sky {
+    background: linear-gradient(135deg, #E8F7FC 0%, #FFFFFF 100%);
+  }
+  
+  .text-gradient-ocean {
+    background: linear-gradient(135deg, #063B5C 0%, #087EA4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .text-gradient-aqua {
+    background: linear-gradient(135deg, #087EA4 0%, #12B8C4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Custom glowing and glassmorphism helpers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(223, 248, 245, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(6, 59, 92, 0.05);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5FBFD;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #087EA4;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #063B5C;
+}
