@@ -27,6 +27,7 @@ import { DestinationExplorer } from '../components/discovery/DestinationExplorer
 import { AIAssistantDrawer } from '../components/health/AIAssistantDrawer';
 import { TripCanvas } from '../components/itinerary/TripCanvas';
 import { VisualJourney } from '../components/itinerary/VisualJourney';
+import { TravelCopilot } from '../components/common/TravelCopilot';
 
 export const TripWorkspacePage = () => {
   const { id } = useParams();
@@ -231,6 +232,9 @@ export const TripWorkspacePage = () => {
         isOpen={showAIDrawer}
         onClose={() => setShowAIDrawer(false)}
       />
+
+      {/* 5. Floating GlobeTrotter Copilot FAB */}
+      <TravelCopilot trip={trip} />
     </div>
   );
 };

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { LayoutGroup } from 'framer-motion';
+import { ItineraryTimeline } from './ItineraryTimeline';
+import { ItineraryCalendar } from './ItineraryCalendar';
 import {
   DndContext,
   closestCenter,
@@ -158,7 +161,7 @@ const SortableActivityItem = ({ activity, tripId, onDelete, onToggleStatus }) =>
   );
 };
 
-export const DayItineraryPlanner = ({ trip }) => {
+export const DayItineraryList = ({ trip }) => {
   const { deleteActivity, updateActivity } = useTrips();
   const stops = trip?.stops || [];
   
@@ -321,6 +324,68 @@ export const DayItineraryPlanner = ({ trip }) => {
           onClose={() => setShowAddModal(false)}
         />
       )}
+    </div>
+  );
+};
+
+// ── 3-Tab Wrapper (List | Timeline | Calendar) ───────────────
+const ITINERARY_TABS = [
+  { id: 'list',     label: 'List' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'calendar', label: 'Calendar' }
+];
+
+export const DayItineraryPlanner = ({ trip }) => {
+  const [activeTab, setActiveTab] = useState('list');
+
+  return (
+    <div className="space-y-5">
+      {/* Animated Tab Bar */}
+      <div className="flex items-center gap-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-1 w-fit">
+        <LayoutGroup id="itinerary-tabs">
+          {ITINERARY_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative px-5 py-2 rounded-xl text-xs font-bold transition-colors ${
+                activeTab === tab.id ? 'text-slate-950' : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="itinerary-tab-pill"
+                  className="absolute inset-0 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/30"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{tab.label}</span>
+            </button>
+          ))}
+        </LayoutGroup>
+      </div>
+
+      {/* Tab Content with fade transition */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === 'list'     && <DayItineraryList trip={trip} />}
+          {activeTab === 'timeline' && (
+            <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl">
+              <ItineraryTimeline trip={trip} />
+            </div>
+          )}
+          {activeTab === 'calendar' && (
+            <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl">
+              <ItineraryCalendar trip={trip} />
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
