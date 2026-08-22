@@ -1,27 +1,32 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getLocalUser, saveLocalUser } from './localStore';
+import { tripService } from './tripService';
 
 export const authService = {
   async getCurrentUser() {
     if (isSupabaseConfigured() && supabase) {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) return null;
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) return getLocalUser();
+        
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      return {
-        id: user.id,
-        email: user.email,
-        fullName: profile?.full_name || user.user_metadata?.full_name || 'Traveler',
-        avatarUrl: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-        bio: profile?.bio || '',
-        homeCurrency: profile?.home_currency || 'USD',
-        travelStyle: profile?.travel_style || 'Balanced Explorer',
-      };
+        return {
+          id: user.id,
+          email: user.email,
+          fullName: profile?.full_name || user.user_metadata?.full_name || 'Traveler',
+          avatarUrl: profile?.avatar_url || user.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+          bio: profile?.bio || '',
+          homeCurrency: profile?.home_currency || 'USD',
+          travelStyle: profile?.travel_style || 'Balanced Explorer',
+        };
+      } catch (e) {
+        console.warn('Supabase getCurrentUser fallback:', e);
+      }
     }
     return getLocalUser();
   },
@@ -39,6 +44,20 @@ export const authService = {
         }
       });
       if (error) throw error;
+
+      if (data.user) {
+        // Ensure profile exists in profiles table
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          email: data.user.email,
+          full_name: fullName || email.split('@')[0],
+          avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+        });
+
+        // Automatically sync all sample / local trips to Supabase!
+        await tripService.syncLocalTripsToSupabase();
+      }
+
       return data.user;
     } else {
       const newUser = {
@@ -63,6 +82,20 @@ export const authService = {
         password
       });
       if (error) throw error;
+
+      if (data.user) {
+        // Ensure profile exists
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          email: data.user.email,
+          full_name: data.user.user_metadata?.full_name || email.split('@')[0],
+          avatar_url: data.user.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+        });
+
+        // Automatically sync all trips to Supabase
+        await tripService.syncLocalTripsToSupabase();
+      }
+
       return data.user;
     } else {
       let user = getLocalUser();
@@ -80,6 +113,17 @@ export const authService = {
       }
       return user;
     }
+  },
+
+  async resetPassword(email) {
+    if (isSupabaseConfigured() && supabase) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin
+      });
+      if (error) throw error;
+      return true;
+    }
+    return true;
   },
 
   async signOut() {

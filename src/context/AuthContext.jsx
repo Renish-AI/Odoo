@@ -49,6 +49,10 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
+  const resetPassword = async (email) => {
+    return await authService.resetPassword(email);
+  };
+
   const logout = async () => {
     await authService.signOut();
     setUser(null);
@@ -73,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         isDemoMode,
         login,
         signup,
+        resetPassword,
         logout,
         switchDemo,
         updateProfile,

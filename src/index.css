@@ -1,54 +1,50 @@
-@import "leaflet/dist/leaflet.css";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-background text-navyText antialiased selection:bg-oceanBlue selection:text-white;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
+    @apply bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-950;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: #030712;
+    background-image: 
+      radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(20, 184, 166, 0.08) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
-/* Ocean Gradients */
-@layer utilities {
-  .bg-gradient-ocean {
-    background: linear-gradient(135deg, #063B5C 0%, #087EA4 100%);
-  }
-  .bg-gradient-aqua {
-    background: linear-gradient(135deg, #087EA4 0%, #12B8C4 100%);
-  }
-  .bg-gradient-turquoise {
-    background: linear-gradient(135deg, #12B8C4 0%, #19C3B1 100%);
-  }
-  .bg-gradient-sky {
-    background: linear-gradient(135deg, #E8F7FC 0%, #FFFFFF 100%);
-  }
-  
-  .text-gradient-ocean {
-    background: linear-gradient(135deg, #063B5C 0%, #087EA4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .text-gradient-aqua {
-    background: linear-gradient(135deg, #087EA4 0%, #12B8C4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-/* Custom glowing and glassmorphism helpers */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.75);
+/* Ocean Theme Glassmorphism */
+.glass-ocean-card {
+  background: rgba(12, 74, 110, 0.15);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(223, 248, 245, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(6, 59, 92, 0.05);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.glass-ocean-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
+}
+
+.text-ocean-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 50%, #2dd4bf 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-ocean-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  color: #030712;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-ocean-primary:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Custom scrollbars */
@@ -58,14 +54,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5FBFD;
+  background: #030712;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #087EA4;
+  background: #075985;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #063B5C;
+  background: #0ea5e9;
 }

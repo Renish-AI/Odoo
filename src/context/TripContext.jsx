@@ -4,34 +4,45 @@ import { itineraryService } from '../services/itineraryService';
 import { activityService } from '../services/activityService';
 import { budgetService } from '../services/budgetService';
 import { profileService } from '../services/profileService';
+import { getLocalTrips, getLocalSavedDestinations } from '../services/localStore';
 
 const TripContext = createContext(null);
 
 export const TripProvider = ({ children }) => {
-  const [trips, setTrips] = useState([]);
-  const [activeTrip, setActiveTrip] = useState(null);
-  const [savedDestinations, setSavedDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Synchronously initialize with local storage data so state is never blank
+  const [trips, setTrips] = useState(() => getLocalTrips());
+  const [activeTrip, setActiveTrip] = useState(() => {
+    const initial = getLocalTrips();
+    return initial.length > 0 ? initial[0] : null;
+  });
+  const [savedDestinations, setSavedDestinations] = useState(() => getLocalSavedDestinations());
+  const [loading, setLoading] = useState(false);
 
   const fetchTrips = useCallback(async () => {
     try {
       setLoading(true);
       const data = await tripService.getTrips();
-      setTrips(data);
-      if (data.length > 0 && !activeTrip) {
-        setActiveTrip(data[0]);
+      if (data && data.length > 0) {
+        setTrips(data);
+        setActiveTrip((currentActive) => {
+          if (!currentActive) return data[0];
+          const matched = data.find((t) => t.id === currentActive.id);
+          return matched || currentActive;
+        });
       }
     } catch (err) {
       console.error('Error fetching trips:', err);
     } finally {
       setLoading(false);
     }
-  }, [activeTrip]);
+  }, []);
 
   const fetchSavedDestinations = useCallback(async () => {
     try {
       const saved = await profileService.getSavedDestinations();
-      setSavedDestinations(saved);
+      if (saved && saved.length > 0) {
+        setSavedDestinations(saved);
+      }
     } catch (err) {
       console.error('Error loading saved destinations:', err);
     }
@@ -42,15 +53,26 @@ export const TripProvider = ({ children }) => {
     fetchSavedDestinations();
   }, [fetchTrips, fetchSavedDestinations]);
 
-  const selectTrip = (tripId) => {
+  const selectTrip = useCallback((tripId) => {
+    if (!tripId) return null;
     const found = trips.find((t) => t.id === tripId || t.shareSlug === tripId);
-    if (found) setActiveTrip(found);
-    return found;
-  };
+    if (found) {
+      setActiveTrip(found);
+      return found;
+    }
+    // Fallback: check local store directly
+    const storedTrips = getLocalTrips();
+    const storedFound = storedTrips.find((t) => t.id === tripId || t.shareSlug === tripId);
+    if (storedFound) {
+      setActiveTrip(storedFound);
+      return storedFound;
+    }
+    return null;
+  }, [trips]);
 
   const createTrip = async (tripData) => {
     const newTrip = await tripService.createTrip(tripData);
-    setTrips((prev) => [newTrip, ...prev]);
+    setTrips((prev) => [newTrip, ...prev.filter((t) => t.id !== newTrip.id)]);
     setActiveTrip(newTrip);
     return newTrip;
   };
@@ -59,9 +81,7 @@ export const TripProvider = ({ children }) => {
     const updated = await tripService.updateTrip(tripId, updates);
     if (updated) {
       setTrips((prev) => prev.map((t) => (t.id === tripId ? updated : t)));
-      if (activeTrip?.id === tripId) {
-        setActiveTrip(updated);
-      }
+      setActiveTrip((prev) => (prev?.id === tripId ? updated : prev));
     }
     return updated;
   };
@@ -69,10 +89,13 @@ export const TripProvider = ({ children }) => {
   const deleteTrip = async (tripId) => {
     await tripService.deleteTrip(tripId);
     setTrips((prev) => prev.filter((t) => t.id !== tripId));
-    if (activeTrip?.id === tripId) {
-      const remaining = trips.filter((t) => t.id !== tripId);
-      setActiveTrip(remaining.length > 0 ? remaining[0] : null);
-    }
+    setActiveTrip((prev) => {
+      if (prev?.id === tripId) {
+        const remaining = trips.filter((t) => t.id !== tripId);
+        return remaining.length > 0 ? remaining[0] : null;
+      }
+      return prev;
+    });
   };
 
   const duplicateTrip = async (tripId) => {
@@ -96,12 +119,15 @@ export const TripProvider = ({ children }) => {
         return t;
       })
     );
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => ({
-        ...prev,
-        stops: [...(prev.stops || []), newStop]
-      }));
-    }
+    setActiveTrip((prev) => {
+      if (prev?.id === tripId) {
+        return {
+          ...prev,
+          stops: [...(prev.stops || []), newStop]
+        };
+      }
+      return prev;
+    });
     return newStop;
   };
 
@@ -115,9 +141,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(updateTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => updateTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? updateTripState(prev) : prev));
     return updated;
   };
 
@@ -132,9 +156,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(filterTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => filterTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? filterTripState(prev) : prev));
   };
 
   const reorderStops = async (tripId, newStops) => {
@@ -142,9 +164,7 @@ export const TripProvider = ({ children }) => {
     setTrips((prev) =>
       prev.map((t) => (t.id === tripId ? { ...t, stops: updated } : t))
     );
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => ({ ...prev, stops: updated }));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? { ...prev, stops: updated } : prev));
   };
 
   const addActivity = async (tripId, stopId, actData) => {
@@ -157,9 +177,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(updateTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => updateTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? updateTripState(prev) : prev));
     return newAct;
   };
 
@@ -173,9 +191,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(updateTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => updateTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? updateTripState(prev) : prev));
     return updated;
   };
 
@@ -189,9 +205,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(filterTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => filterTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? filterTripState(prev) : prev));
   };
 
   // Expenses
@@ -205,9 +219,7 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(updateTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => updateTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? updateTripState(prev) : prev));
     return newExp;
   };
 
@@ -221,20 +233,18 @@ export const TripProvider = ({ children }) => {
       };
     };
     setTrips((prev) => prev.map(filterTripState));
-    if (activeTrip?.id === tripId) {
-      setActiveTrip((prev) => filterTripState(prev));
-    }
+    setActiveTrip((prev) => (prev?.id === tripId ? filterTripState(prev) : prev));
   };
 
   // Saved destinations
   const toggleSaveDestination = async (dest) => {
     const exists = savedDestinations.some(
-      (d) => d.cityName.toLowerCase() === dest.city.toLowerCase()
+      (d) => d.cityName?.toLowerCase() === dest.city.toLowerCase()
     );
     if (exists) {
       await profileService.removeSavedDestination(dest.city);
       setSavedDestinations((prev) =>
-        prev.filter((d) => d.cityName.toLowerCase() !== dest.city.toLowerCase())
+        prev.filter((d) => d.cityName?.toLowerCase() !== dest.city.toLowerCase())
       );
     } else {
       const item = await profileService.saveDestination(dest);

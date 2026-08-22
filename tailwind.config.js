@@ -8,49 +8,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        deepOcean: '#063B5C',
-        oceanBlue: '#087EA4',
-        aqua: '#12B8C4',
-        turquoise: '#19C3B1',
-        seafoam: '#DFF8F5',
-        sky: '#E8F7FC',
-        background: '#F5FBFD',
-        navyText: '#073B4C',
-        mutedText: '#62808C',
-        warning: '#F59E0B',
-        error: '#EF4444',
+        ocean: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          950: '#082f49',
+        },
+        aqua: {
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
+        },
+        brand: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+          950: '#042f2e',
+        }
       },
       fontFamily: {
-        sans: ['Inter', 'Manrope', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
-        'fade-in': 'fadeIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-        'slide-up': 'slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-        'shimmer': 'shimmer 2s linear infinite',
+      boxShadow: {
+        'ocean-glow': '0 0 25px -5px rgba(14, 165, 233, 0.4)',
+        'aqua-glow': '0 0 25px -5px rgba(34, 211, 238, 0.4)',
+        'glass-ocean': '0 8px 32px 0 rgba(2, 44, 73, 0.35)',
       },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        pulseSubtle: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.85' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-1000px 0' },
-          '100%': { backgroundPosition: '1000px 0' },
-        }
+      backgroundImage: {
+        'ocean-gradient': 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #14b8a6 100%)',
+        'ocean-dark': 'radial-gradient(ellipse at top, #0c4a6e 0%, #082f49 40%, #030712 100%)',
       }
     },
   },
