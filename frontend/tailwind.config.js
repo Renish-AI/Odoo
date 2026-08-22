@@ -19,6 +19,20 @@ export default {
         mutedText: '#62808C',
         warning: '#F59E0B',
         error: '#EF4444',
+        // Overriding slate to provide a Deep Navy dark mode aesthetic automatically across the app
+        slate: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#112240', // Deep Navy Surface Light
+          900: '#0A192F', // Deep Navy Surface
+          950: '#061122', // Deep Navy Background
+        }
       },
       fontFamily: {
         sans: ['Inter', 'Manrope', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],

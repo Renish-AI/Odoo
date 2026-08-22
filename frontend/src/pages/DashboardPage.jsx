@@ -17,10 +17,11 @@ import {
 import { useTrips } from '../context/TripContext';
 import { useAuth } from '../context/AuthContext';
 import { CreateTripModal } from '../components/common/CreateTripModal';
+import { CardSkeleton } from '../components/ui/Skeleton';
 import { motion } from 'framer-motion';
 
 export const DashboardPage = () => {
-  const { trips, deleteTrip, duplicateTrip } = useTrips();
+  const { trips, loading, deleteTrip, duplicateTrip } = useTrips();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -160,7 +161,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Cinematic Upcoming Trip Card */}
-      {trips.length > 0 && (
+      {!loading && trips.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-white">Upcoming Adventure</h3>
           <div className="relative rounded-3xl overflow-hidden shadow-2xl group border border-slate-700/50">
@@ -215,7 +216,11 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        {filteredTrips.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
+          </div>
+        ) : filteredTrips.length === 0 ? (
           <div className="text-center py-16 border border-dashed border-slate-800 rounded-3xl bg-slate-950/40 space-y-3">
             <Globe2 className="w-10 h-10 text-slate-600 mx-auto" />
             <h4 className="text-base font-bold text-white">No journeys planned yet</h4>

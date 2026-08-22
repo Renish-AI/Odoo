@@ -4,6 +4,7 @@ import { itineraryService } from '../services/itineraryService';
 import { activityService } from '../services/activityService';
 import { budgetService } from '../services/budgetService';
 import { profileService } from '../services/profileService';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const TripContext = createContext(null);
 
@@ -41,6 +42,27 @@ export const TripProvider = ({ children }) => {
     fetchTrips();
     fetchSavedDestinations();
   }, [fetchTrips, fetchSavedDestinations]);
+
+  // Supabase Real-time Subscriptions
+  useEffect(() => {
+    if (!isSupabaseConfigured() || !supabase) return;
+
+    const channel = supabase.channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trips' }, () => {
+        fetchTrips(); // Refresh list on trip change
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_stops' }, () => {
+        fetchTrips(); // Refresh list on stop change
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'itinerary_activities' }, () => {
+        fetchTrips(); // Refresh list on activity change
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchTrips]);
 
   const selectTrip = (tripId) => {
     const found = trips.find((t) => t.id === tripId || t.shareSlug === tripId);
